@@ -1,0 +1,27 @@
+#cloud-config
+users:
+  - name: automation-user
+    ssh-authorized-keys:
+      - <YOUR_SSH_PUBLIC_KEY> # Replace with contents of linode_key.pub
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL'] # Passwordless sudo for this user
+
+packages:
+  - curl
+  - gnupg
+  - software-properties-common
+
+runcmd:
+  # Install Ansible
+  - apt-get update
+  - apt-add-repository --yes --update ppa:ansible/ansible
+  - apt-get install -y ansible
+  # Install Terraform
+  - curl -fsSL https://apt.releases.hashicorp.com/gpg | tee /etc/apt/trusted.gpg.d/hashicorp.gpg
+  - apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+  - apt-get update
+  - apt-get install -y terraform
+  # Verify installations
+  - ansible --version
+  - terraform --version
