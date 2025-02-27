@@ -2,36 +2,19 @@
 users:
   - name: automation-user
     ssh-authorized-keys:
-      - <+---[RSA 4096]----+
-|       ..*....   |
-|      ..= +oo.   |
-|    ooo..O. +..  |
-|    .=o o+Eooo   |
-|  . .o..S.o.o.o  |
-|   o  .+...o o   |
-|  .    .oo+ .    |
-|   . . ..o+  .   |
-|   .o . .o o.    |
-+----[SHA256]-----+> # Replace with contents of linode_key.pub
+      - <SHA256:fkmM8le7YkNCoG3+i+gQF3PW98RvhJS8IyTBhc0O22w>
     groups: sudo
     shell: /bin/bash
-    sudo: ['ALL=(ALL) NOPASSWD:ALL'] # Passwordless sudo for this user
-
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
 packages:
   - curl
   - gnupg
   - software-properties-common
-
 runcmd:
-  # Install Ansible
   - apt-get update
   - apt-add-repository --yes --update ppa:ansible/ansible
   - apt-get install -y ansible
-  # Install Terraform
   - curl -fsSL https://apt.releases.hashicorp.com/gpg | tee /etc/apt/trusted.gpg.d/hashicorp.gpg
   - apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
   - apt-get update
   - apt-get install -y terraform
-  # Verify installations
-  - ansible --version
-  - terraform --version
