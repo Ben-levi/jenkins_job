@@ -1,28 +1,64 @@
 pipeline {
-    agent { label 'agent1' }   
-
-    // This is the code repository where the pipeline will pull the Jenkinsfile
+    agent any
     environment {
-        REPO_URL = 'https://github.com/Ben-levi/jenkins_job.git'
-        BRANCH_NAME = 'main' // specify the branch name here
+        LINODE_TOKEN = credentials('linode-api-token') // Stored in Jenkins credentials
     }
-
     stages {
-        stage('GitOps - Checkout Pipeline from Git') {
+        stage('Checkout Code') {
             steps {
-                // Check out the Jenkinsfile from the specified Git repo
-                git branch: "${BRANCH_NAME}", url: "${REPO_URL}"
+                git url: 'https://github.com/yourusername/my-infra-repo.git', branch: 'main'
             }
         }
         
-        stage('Run Python Code') {
-            when {
-                expression { return params.DRY_RUN == false }
-            }
+        stage('Terraform Init') {
             steps {
-                // Execute the Python code and store the output in output.txt
-                sh 'python3 main.py > output.txt'
+                dir('terraform') {
+                    sh 'terraform init'
+                }
             }
+        }
+        
+        stage('Terraform Plan') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform plan -out=tfplan'
+                    archiveArtifacts artifacts: 'terraform/tfplan', allowEmptyArchive: true
+                }
+            }
+        }
+        
+        stage('Approve Terraform Apply') {
+            steps {
+                input message: 'Approve Terraform Apply?', ok: 'Apply'
+            }
+        }
+        
+        stage('Terraform Apply') {
+            steps {
+                dir('terraform') {
+                    sh 'terraform apply -auto-approve tfplan'
+                }
+            }
+        }
+        
+        stage('Ansible Configuration') {
+            steps {
+                dir('ansible') {
+                    // Dynamically generate inventory from Terraform outputs if needed
+                    sh 'ansible-playbook -i inventory playbook.yml'
+                }
+            }
+        }
+    }
+    post {
+        always {
+            cleanWs() // Clean workspace after run
+        }
+        success {
+            echo 'Infrastructure deployed and configured successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check logs for details.'
         }
     }
 }
