@@ -13,8 +13,8 @@ pipeline {
         stage('Install Terraform') {
             steps {
                 sh '''
-                    curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
-                    echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/terraform.list
+                    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo tee /etc/apt/trusted.gpg.d/hashicorp.gpg > /dev/null
+                    sudo chmod 644 /etc/apt/trusted.gpg.d/hashicorp.gpg
                     apt-get update && apt-get install -y terraform
                 '''
             }
