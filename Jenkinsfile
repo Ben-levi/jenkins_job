@@ -1,14 +1,28 @@
 pipeline {
     agent any
     environment {
-        LINODE_TOKEN = credentials('jenkins') // Stored in Jenkins credentials
+        LINODE_TOKEN = credentials('linode-api-token') // Store in Jenkins credentials
+        SSH_KEY = credentials('linode-ssh-key')       // Store private key
     }
     stages {
+        stage('Deploy Linode') {
+            steps {
+                sh '''
+                    linode-cli linodes create \
+                        --region us-east \
+                        --type g6-standard-1 \
+                        --image linode/ubuntu22.04 \
+                        --user-data "$(cat user-data.yml)" \
+                        --authorized-keys "$(cat $SSH_KEY.pub)" \
+                        --text --no-headers
+                '''
+                // Capture the IP from output if needed
+            }
         stage('Checkout Code') {
             steps {
                 git url: 'https://github.com/Ben-levi/jenkins_job.git', branch: 'main'
             }
-        }
+        
         
         stage('Install Terraform') {
             steps {
