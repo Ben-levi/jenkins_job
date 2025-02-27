@@ -10,6 +10,22 @@ pipeline {
             }
         }
         
+        stage('Install Terraform') {
+            steps {
+                sh '''
+                    curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
+                    echo "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/terraform.list
+                    apt-get update && apt-get install -y terraform
+                '''
+            }
+        }
+        
+        stage('Terraform Version') {
+            steps {
+                sh 'terraform --version'
+            }
+        }
+        
         stage('Terraform Init') {
             steps {
                 sh 'terraform init'
@@ -35,10 +51,26 @@ pipeline {
             }
         }
         
+        stage('Install Ansible') {
+            steps {
+                sh '''
+                    apt-get update
+                    apt-get install -y software-properties-common
+                    add-apt-repository --yes --update ppa:ansible/ansible
+                    apt-get install -y ansible
+                '''
+            }
+        }
+        
+        stage('Ansible Version') {
+            steps {
+                sh 'ansible --version'
+            }
+        }
+        
         stage('Ansible Configuration') {
             steps {
                 dir('ansible') {
-                    // Dynamically generate inventory from Terraform outputs if needed
                     sh 'ansible-playbook -i inventory playbook.yml'
                 }
             }
