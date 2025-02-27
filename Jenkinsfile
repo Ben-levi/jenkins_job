@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        LINODE_TOKEN = credentials('linode-api-token') // Stored in Jenkins credentials
+        LINODE_TOKEN = credentials('jenkins') // Stored in Jenkins credentials
     }
     stages {
         stage('Checkout Code') {
