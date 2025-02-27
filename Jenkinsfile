@@ -12,17 +12,14 @@ pipeline {
         
         stage('Terraform Init') {
             steps {
-                  sh 'terraform init'
-                }
+                sh 'terraform init'
             }
         }
         
         stage('Terraform Plan') {
             steps {
-                dir('terraform') {
-                    sh 'terraform plan -out=tfplan'
-                    archiveArtifacts artifacts: 'terraform/tfplan', allowEmptyArchive: true
-                }
+                sh 'terraform plan -out=tfplan'
+                archiveArtifacts artifacts: 'tfplan', allowEmptyArchive: true
             }
         }
         
@@ -34,9 +31,7 @@ pipeline {
         
         stage('Terraform Apply') {
             steps {
-                dir('terraform') {
-                    sh 'terraform apply -auto-approve tfplan'
-                }
+                sh 'terraform apply -auto-approve tfplan'
             }
         }
         
