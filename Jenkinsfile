@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        LINODE_IP = '<YOUR_LINODE_IP>' // Replace with your Linode's public IP
+        LINODE_IP = '172.233.32.56' // Replace with your Linode's public IP
         SSH_KEY = credentials('linode-ssh-key') // Private key from Jenkins credentials
         LINODE_USER = 'automation-user' // Adjust to 'root' if your key is for root
     }
