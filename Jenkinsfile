@@ -26,7 +26,7 @@ pipeline {
         }
         stage('Wait for Linode Boot') {
             steps {
-                sleep time: 60, unit: 'SECONDS' // Give cloud-init time to finish
+                sleep time: 30, unit: 'SECONDS' // Reduced time since no installations
             }
         }
         stage('Checkout Code') {
@@ -62,7 +62,6 @@ pipeline {
                 sh """
                     ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no automation-user@${LINODE_IP} 'cd ~/terraform && terraform plan -out=tfplan'
                 """
-                // Optionally copy tfplan back to Jenkins for archiving
                 sh """
                     scp -i ${SSH_KEY} -o StrictHostKeyChecking=no automation-user@${LINODE_IP}:~/terraform/tfplan .
                     archiveArtifacts artifacts: 'tfplan', allowEmptyArchive: true
