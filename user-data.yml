@@ -2,7 +2,7 @@
 users:
   - name: automation-user
     ssh-authorized-keys:
-      - <YOUR_SSH_PUBLIC_KEY> # Replace with your SSH public key (e.g., contents of ~/.ssh/linode_key.pub)
+      - <ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHvu8nEKJITw0gjvfM93t9/1hQExDgiBDMiUOIeaxSVn user@DESKTOP-J340N36> # Replace with your SSH public key (e.g., contents of ~/.ssh/linode_key.pub)
     groups: sudo
     shell: /bin/bash
     sudo: ['ALL=(ALL) NOPASSWD:ALL'] # Passwordless sudo for automation-user
